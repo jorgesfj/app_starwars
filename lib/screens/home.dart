@@ -1,5 +1,11 @@
+import 'dart:convert';
+import 'dart:ffi';
+
+import 'package:app_filmes/models/fetch_characters.dart';
+import 'package:app_filmes/models/fetch_movies.dart';
 import 'package:app_filmes/widgets/widgets.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 
 class Home extends StatefulWidget {
   const Home({Key? key}) : super(key: key);
@@ -17,6 +23,40 @@ class _HomeState extends State<Home> {
   bool _isFavesSelected = false;
   var page = "home";
 
+  late var futureMovies;
+
+  var movies = <Movie>[];
+  var characters = <Character>[];
+
+  _getMovies() {
+    API.getMovies().then((response) {
+      setState(() {
+        var varJson = json.decode(response.body);
+        Iterable lista = varJson["results"];
+        movies = lista.map((model) => Movie.fromJson(model)).toList();
+        print(movies);
+      });
+    });
+  }
+
+  _getCharacters() {
+    APICharacter.getCharacter().then((response) {
+      setState(() {
+        var varJson = json.decode(response.body);
+        Iterable lista = varJson["results"];
+        characters = lista.map((model) => Character.fromJson(model)).toList();
+        print(characters);
+      });
+    });
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getMovies();
+    _getCharacters();
+  }
+
   @override
   Widget build(BuildContext context) {
     height = MediaQuery.of(context).size.height;
@@ -27,8 +67,64 @@ class _HomeState extends State<Home> {
         children: [
           widgets.buildAppBar(height, width, page, context),
           _buildButtons(height, width),
+          _isCharactersSelected
+              ? _buildCharacters(height, width, context)
+              : Container(),
+          (!_isCharactersSelected && !_isFavesSelected)
+              ? _buildMovies(height, width, context)
+              : Container(),
         ],
       ),
+    );
+  }
+
+  Widget _buildCharacters(height, width, context) {
+    return Expanded(
+        child: ListView.builder(
+      itemCount: characters.length,
+      itemBuilder: (BuildContext context, int i) {
+        var item = characters[i];
+        return movieCard(item, context, height, width, "character");
+      },
+    ));
+  }
+
+  Widget _buildMovies(height, width, context) {
+    return Expanded(
+        child: ListView.builder(
+      itemCount: movies.length,
+      itemBuilder: (BuildContext context, int i) {
+        var item = movies[i];
+        return movieCard(item, context, height, width, "movie");
+      },
+    ));
+  }
+
+  movieCard(item, context, height, width, type) {
+    return GestureDetector(
+      child: Container(
+          margin: EdgeInsets.only(left: 50, right: 50, bottom: 20),
+          height: height * 0.1,
+          child: Padding(
+              padding: EdgeInsets.all(0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Text(
+                    item.title,
+                  ),
+                  Container(
+                    width: width * 0.2,
+                    child: IconButton(
+                        alignment: Alignment.centerRight,
+                        onPressed: () {},
+                        icon: Icon(Icons.favorite_border_outlined)),
+                  )
+                ],
+              )),
+          decoration: BoxDecoration(
+              border: Border.all(color: Colors.black),
+              color: Colors.transparent)),
     );
   }
 
