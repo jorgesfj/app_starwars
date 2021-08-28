@@ -167,6 +167,18 @@ class _HomeState extends State<Home> {
                                     title: item.title, type: item.type));
                               });
                             });
+                          } else {
+                            type == "movie"
+                                ? db.deleteMovie(item.title).then((value) {
+                                    setState(() {
+                                      favorites.remove(item);
+                                    });
+                                  })
+                                : db.deleteCharacter(item.title).then((value) {
+                                    setState(() {
+                                      favorites.remove(item);
+                                    });
+                                  });
                           }
                         },
                         icon: isFave
