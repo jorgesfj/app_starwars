@@ -1,6 +1,32 @@
-# app_filmes
+# Seleção de Desenvolvedor de Software - Escribo
+# Teste Técnico 03 - 
+Desenvolver um aplicativo de listagem de filmes e personagens de Star Wars.
 
-A new Flutter project.
+### 📋 Pré-requisitos
+A tarefa foi desenvolvida em Flutter e Dart 
+Versão utilizada: Flutter (Channel stable, 2.2.2, on Microsoft Windows [versÃ£o 10.0.19042.1165], locale pt-BR)
+
+Bibliotecas Utilizadas: 
+  webview_flutter: ^2.0.12
+  http: ^0.13.3
+  sqflite: ^2.0.0+4
+  path_provider: ^2.0.2
+  fluttermoji: any
+
+### 🔧 Instalação
+O Flutter pode ser instalado através deste link: https://flutter.dev/
+
+## ⚙️ Executando
+Executar um projeto flutter normalmente
+```
+flutter run
+```
+
+
+## ✒️ Autor
+Jorge Soares – jorge.farias@arapiraca.ufal.br
+
+[https://github.com/jorgesfj](https://github.com/jorgesfj)
 
 ## Getting Started
 
