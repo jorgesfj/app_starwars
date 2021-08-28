@@ -1,6 +1,8 @@
 import 'dart:convert';
 import 'dart:ffi';
 
+import 'package:app_filmes/db/database.dart';
+import 'package:app_filmes/models/favorites.dart';
 import 'package:app_filmes/models/fetch_characters.dart';
 import 'package:app_filmes/models/fetch_movies.dart';
 import 'package:app_filmes/widgets/widgets.dart';
@@ -15,6 +17,9 @@ class Home extends StatefulWidget {
 }
 
 class _HomeState extends State<Home> {
+  DatabaseHelper db = DatabaseHelper();
+  List<Favorite> favorites = <Favorite>[];
+
   Widgets widgets = Widgets();
   late double height;
   late double width;
@@ -34,7 +39,6 @@ class _HomeState extends State<Home> {
         var varJson = json.decode(response.body);
         Iterable lista = varJson["results"];
         movies = lista.map((model) => Movie.fromJson(model)).toList();
-        print(movies);
       });
     });
   }
@@ -45,7 +49,6 @@ class _HomeState extends State<Home> {
         var varJson = json.decode(response.body);
         Iterable lista = varJson["results"];
         characters = lista.map((model) => Character.fromJson(model)).toList();
-        print(characters);
       });
     });
   }
@@ -55,6 +58,16 @@ class _HomeState extends State<Home> {
     super.initState();
     _getMovies();
     _getCharacters();
+    db.deleteMovie("Harry Potter");
+    db.deleteMovie("A New Hope");
+    db.deleteMovie("The Empire Strikes Back");
+    db.deleteCharacter("C-3PO");
+    db.deleteCharacter("Luke Skywalker");
+    db.getFavorites().then((lista) {
+      setState(() {
+        favorites = lista;
+      });
+    });
   }
 
   @override
@@ -70,12 +83,24 @@ class _HomeState extends State<Home> {
           _isCharactersSelected
               ? _buildCharacters(height, width, context)
               : Container(),
+          _isFavesSelected ? _buildFaves(height, width, context) : Container(),
           (!_isCharactersSelected && !_isFavesSelected)
               ? _buildMovies(height, width, context)
               : Container(),
         ],
       ),
     );
+  }
+
+  Widget _buildFaves(height, width, context) {
+    return Expanded(
+        child: ListView.builder(
+      itemCount: favorites.length,
+      itemBuilder: (BuildContext context, int i) {
+        var item = favorites[i];
+        return movieCard(item, context, height, width, "fave");
+      },
+    ));
   }
 
   Widget _buildCharacters(height, width, context) {
@@ -100,7 +125,18 @@ class _HomeState extends State<Home> {
     ));
   }
 
+  bool _isFave(item) {
+    var isFave = false;
+    for (int i = 0; i < favorites.length; i++) {
+      if (item.title == favorites[i].title) {
+        isFave = true;
+      }
+    }
+    return isFave;
+  }
+
   movieCard(item, context, height, width, type) {
+    bool isFave = _isFave(item);
     return GestureDetector(
       child: Container(
           margin: EdgeInsets.only(left: 50, right: 50, bottom: 20),
@@ -117,8 +153,17 @@ class _HomeState extends State<Home> {
                     width: width * 0.2,
                     child: IconButton(
                         alignment: Alignment.centerRight,
-                        onPressed: () {},
-                        icon: Icon(Icons.favorite_border_outlined)),
+                        onPressed: () {
+                          setState(() {
+                            isFave = true;
+                            type == "movie"
+                                ? db.insertMovie(item)
+                                : db.insertChatacter(item);
+                          });
+                        },
+                        icon: isFave
+                            ? Icon(Icons.favorite)
+                            : Icon(Icons.favorite_border_outlined)),
                   )
                 ],
               )),

@@ -13,8 +13,9 @@ class APICharacter {
 
 class Character {
   late String title;
+  String type = "character";
 
-  Character({required this.title});
+  Character({required this.title, required this.type});
 
   Character.fromJson(Map<String, dynamic> json) {
     title = json['name'];
@@ -22,7 +23,8 @@ class Character {
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
-    data['name'] = this.title;
+    data['title'] = this.title;
+    data['type'] = this.type;
     return data;
   }
 }

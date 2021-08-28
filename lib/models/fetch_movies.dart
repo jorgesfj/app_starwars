@@ -13,19 +13,18 @@ class API {
 
 class Movie {
   late String title;
-  late int episodeId;
+  String type = "movie";
 
-  Movie({required this.title, required this.episodeId});
+  Movie({required this.title, required this.type});
 
   Movie.fromJson(Map<String, dynamic> json) {
     title = json['title'];
-    episodeId = json['episode_id'];
   }
 
   Map<String, dynamic> toJson() {
     final Map<String, dynamic> data = new Map<String, dynamic>();
     data['title'] = this.title;
-    data['episode_id'] = this.episodeId;
+    data['type'] = this.type;
     return data;
   }
 }
