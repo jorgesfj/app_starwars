@@ -58,11 +58,6 @@ class _HomeState extends State<Home> {
     super.initState();
     _getMovies();
     _getCharacters();
-    db.deleteMovie("Harry Potter");
-    db.deleteMovie("A New Hope");
-    db.deleteMovie("The Empire Strikes Back");
-    db.deleteCharacter("C-3PO");
-    db.deleteCharacter("Luke Skywalker");
     db.getFavorites().then((lista) {
       setState(() {
         favorites = lista;
@@ -137,6 +132,10 @@ class _HomeState extends State<Home> {
 
   movieCard(item, context, height, width, type) {
     bool isFave = _isFave(item);
+    Color cor = Colors.black;
+    if (isFave && _isFavesSelected) {
+      cor = item.type == "movie" ? Colors.red : Colors.green;
+    }
     return GestureDetector(
       child: Container(
           margin: EdgeInsets.only(left: 50, right: 50, bottom: 20),
@@ -154,12 +153,21 @@ class _HomeState extends State<Home> {
                     child: IconButton(
                         alignment: Alignment.centerRight,
                         onPressed: () {
-                          setState(() {
-                            isFave = true;
-                            type == "movie"
-                                ? db.insertMovie(item)
-                                : db.insertChatacter(item);
-                          });
+                          if (type == "movie") {
+                            db.insertMovie(item).then((value) {
+                              setState(() {
+                                favorites.add(Favorite(
+                                    title: item.title, type: item.type));
+                              });
+                            });
+                          } else if (type == "character") {
+                            db.insertCharacter(item).then((value) {
+                              setState(() {
+                                favorites.add(Favorite(
+                                    title: item.title, type: item.type));
+                              });
+                            });
+                          }
                         },
                         icon: isFave
                             ? Icon(Icons.favorite)
@@ -168,8 +176,7 @@ class _HomeState extends State<Home> {
                 ],
               )),
           decoration: BoxDecoration(
-              border: Border.all(color: Colors.black),
-              color: Colors.transparent)),
+              border: Border.all(color: cor), color: Colors.transparent)),
     );
   }
 

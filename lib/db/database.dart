@@ -49,7 +49,7 @@ class DatabaseHelper {
     return resultado;
   }
 
-  Future<int> insertChatacter(Character character) async {
+  Future<int> insertCharacter(Character character) async {
     Database db = await this.database;
     var resultado = await db.insert(faveTable, character.toJson());
     return resultado;
