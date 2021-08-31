@@ -1,5 +1,4 @@
 import 'dart:convert';
-import 'dart:ffi';
 
 import 'package:app_filmes/db/database.dart';
 import 'package:app_filmes/models/favorites.dart';
